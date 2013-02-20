@@ -25,7 +25,7 @@ String version = "2.4";
 //physical movement scale (bigger == more);
 double tablexsteps    = 13000;     
 double tableysteps    = 13000;
-double tablezsteps    = 210000;    //257142 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
+double tablezsteps    = 100000;    //257142 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
 double tableesteps  = -3600;
 
 //measured (1000 = 1mm)
@@ -35,8 +35,8 @@ double tablezdistance = 96000;    //in microns (96mm)
 double tableedistance = 1000;    //in microns (96mm)
 
 double maxmotorSpeed = 12600;
-double motorSpeed = 9600;                                           //default 9600
-double motorAccel = 80000; //steps/second/second to accelerate      //default 80000
+double motorSpeed = 12600;                                           //default 9600
+double motorAccel = 160000; //steps/second/second to accelerate      //default 80000
 
 // Motor pins
 int motorpinXstep = 7;
@@ -88,6 +88,15 @@ void setup() {
   stepper2.setMaxSpeed(maxmotorSpeed);                         
   stepper4.setMaxSpeed(maxmotorSpeed);                         
   stepper5.setMaxSpeed(maxmotorSpeed);      
+
+  stepper1.setSpeed(motorSpeed);
+  stepper2.setSpeed(motorSpeed);
+  stepper4.setSpeed(motorSpeed);
+  stepper5.setSpeed(motorSpeed);
+  stepper1.setAcceleration(motorAccel);  
+  stepper2.setAcceleration(motorAccel);  
+  stepper4.setAcceleration(motorAccel);  
+  stepper5.setAcceleration(motorAccel);    
 
   zeroaxis();                                //ZERO AXIS
   
@@ -144,8 +153,8 @@ void zeroaxis() {
 
 ///////////////////////////////////////////////////////ZERO X OVERHANG SIDE TO SIDE     
     
-    stepper5.setSpeed(6400);
-    stepper5.setAcceleration(999999);          
+    //stepper5.setSpeed(6400);
+    //stepper5.setAcceleration(999999);          
     
     while (digitalRead(xZeropin) != xZeroNC) {   
       stepper5.moveTo(stepper5.currentPosition()-10);      //change to +4 for zero on opposite side      
@@ -182,7 +191,7 @@ void zeroaxis() {
 
     while (digitalRead(zZeropin) != zZeroNC) {   
       stepper1.moveTo(stepper1.currentPosition()+320);          
-      stepper1.runToPosition();
+      stepper1.run();
     }
     stepper1.stop();
     stepper1.setCurrentPosition(tablezsteps);
