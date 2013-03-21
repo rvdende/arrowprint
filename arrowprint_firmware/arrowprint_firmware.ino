@@ -10,9 +10,7 @@
  */
 #include <aJSON.h>
 
-#include <AccelStepper.h>
-
-String version = "2.4";
+String version = "5.0";
 
 
 
