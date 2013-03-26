@@ -1,6 +1,6 @@
 // Arrow command line relay
 // this program scans for connected devices and relays communication to a socket server
-// v 4.0
+// v 5.0
 //ARROW PRINTER
 //READS IN GCODE AND RELAYS TO DUE FOR PRINTING.
 
@@ -47,8 +47,9 @@ var gcodeprint = function(arduino) {
 		}
 
 		if (obj.thermistor) {
-			TEMP = obj.thermistor / Math.pow(2,16) * 1024;
-			//console.log("Thermistor " + thermistorlookupcelsius(  ));
+			var temperature = (obj.thermistor/Math.pow(2,16))*1024;
+			temperature = thermistorlookupcelsius(temperature);
+			console.log("Thermistor " + temperature);
 		}
 
 	});
@@ -58,7 +59,7 @@ var gcodeprint = function(arduino) {
 var reader = require ("buffered-reader");
 var BinaryReader = reader.BinaryReader;
 var DataReader = reader.DataReader;
-var file = "wade-big.gcode";
+var file = "printer_bracket.gcode";
 var offset;
 var linecounter = 0;
 
@@ -86,7 +87,7 @@ var readerstream = new DataReader (file, { encoding: "utf8" })
 			      tokens.splice(1).forEach(function(token) {
 			        var key = token[0].toLowerCase();
 			        var value = parseFloat(token.substring(1));
-			        args[key] = value.toFixed(3);				        
+			        args[key] = value.toFixed(5);				        
 			      });
 
 			      //calculate speed
@@ -94,7 +95,7 @@ var readerstream = new DataReader (file, { encoding: "utf8" })
 			      TIMElast = os.uptime();
 			      //
 
-			      console.log(Math.round(TEMP) + 'C '+ speed +'psec '+ linecounter + 'L ' + JSON.stringify(args));
+			      console.log(linecounter + 'L ' + JSON.stringify(args));
 			      NEWGODE = JSON.stringify(args);
 			      
 			    }
