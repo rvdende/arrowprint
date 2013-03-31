@@ -10,7 +10,7 @@
  */
 #include <aJSON.h>
 
-String version = "5.1";
+String version = "5.2";
 
 
 
@@ -24,16 +24,16 @@ int cmd = 0;
 int hotheadtarget = 10;    //160 DEFAULT
 
 //physical movement scale (bigger == more);
-double tablexsteps    = 23000;     
-double tableysteps    = 23000;
-double tablezsteps    = 349100;    //234000 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
-double tableesteps  = -1000000;
+double tablexsteps    = 1920.0;     
+double tableysteps    = 2134.0;
+double tablezsteps    = 22400.0;    //234000 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
+double tableesteps  = -45000.0;
 
 //measured (1000 = 1mm)
-double tablexdistance = 134.765625;    //in microns (158mm )
-double tableydistance = 134.765625;    //in microns (200mm)
-double tablezdistance = 61.913;    //in microns (96mm)
-double tableedistance = 920.000;    //in microns (96mm)
+double tablexdistance = 180;    //in microns (158mm )
+double tableydistance = 200.0625;    //in microns (200mm)
+double tablezdistance = 69.2347;    //in microns (96mm)
+double tableedistance = 1000.000;    //in microns (96mm)
 
 
 // Motor pins
@@ -46,7 +46,7 @@ double stepperXcurrPosition = 0;
 double stepperXdestPosition = 0;
 double stepperXtimer = 0;
 int    stepperXtoggle = 0;
-double stepperXspeed = 110;
+double stepperXspeed = 3200;
 
 int motorpinYstep = 26;
 int motorpinYdir  = 27;
@@ -54,7 +54,7 @@ double stepperYcurrPosition = 0;
 double stepperYdestPosition = 0;
 double stepperYtimer = 0;
 int    stepperYtoggle = 0;
-double stepperYspeed = 110;  //slower for more power
+double stepperYspeed = 3200;  //slower for more power
 
 int motorpinZstep = 30;
 int motorpinZdir  = 31;
@@ -62,7 +62,7 @@ double stepperZcurrPosition = 0;
 double stepperZdestPosition = 0;
 double stepperZtimer = 0;
 int    stepperZtoggle = 0;
-double stepperZspeed = 110;
+double stepperZspeed = 3200;
 
 int motorpinEstep = 28;
 int motorpinEdir  = 29;
@@ -70,7 +70,7 @@ double stepperEcurrPosition = 0;
 double stepperEdestPosition = 0;
 double stepperEtimer = 0;
 int    stepperEtoggle = 0;
-double stepperEspeed = 110;
+double stepperEspeed = 6400;
 
 
 // Motor Zero switch pins
@@ -151,7 +151,7 @@ void loop() {
         aJson.deleteItem(msg);                
 
         tempcounter++;
-        if (tempcounter > 5) {
+        if (tempcounter > 15) {
             thermistor();
             tempcounter = 0;
         }
@@ -185,6 +185,8 @@ void loop() {
         delay(250);        
     }
 
+
+    
 }
 //=======================================================================================
 
@@ -197,38 +199,7 @@ void thermistor() {
 //=======================================================================================
 
 
-void zeroplane() {
-      /////////////////////////////////////////////////////////// X LEFT RIGHT
 
-    while (digitalRead(xZeropin) != xZeroNC) {   
-      stepperXdestPosition = stepperXdestPosition - 32;
-      while (stepperXdistanceToGo() != 0) {
-        stepperXrun();
-      }
-    }
-    
-    stepperXcurrPosition = -2000;
-    //moves to zero
-    stepperXdestPosition = 0;
-    lastx = 0;
-    while (stepperXdistanceToGo() != 0) {
-      stepperXrun();
-    }
-    ////////////////////////////////////////////////////////////// Y TABLE FRONT BACK
-    while (digitalRead(yZeropin) != yZeroNC) {   
-      stepperYdestPosition = stepperYdestPosition + 32;
-      while (stepperYdistanceToGo() != 0) {
-        stepperYrun();
-      }      
-    }
-    //moves to 0
-    stepperYcurrPosition = tableysteps+10000;
-    stepperYdestPosition = 0;
-    lasty = 0;
-    while (stepperYdistanceToGo() != 0) {
-      stepperYrun();
-    }      
-}
 
 // START ZEROAXIS()
 void zeroaxis() {
@@ -237,58 +208,62 @@ void zeroaxis() {
   */
 
     ////////////////////////////////////////////////////////ZERO Z - UPDOWN
-    Serial.print("{ \"log\" : \"Attempting to zero Z axis\"}");
-
     while (digitalRead(zZeropin) != zZeroNC) {             
-      stepperZdestPosition = stepperZdestPosition + 16;
+      stepperZdestPosition = stepperZdestPosition + 1;
       while (stepperZdistanceToGo() != 0) {
         stepperZrun();
       }
     }
 
-    stepperZcurrPosition = tablezsteps + 6400;
+    //top most is equal to tablezsteps
+    stepperZcurrPosition = tablezsteps;
  
-    //moves to zero
+    //moves to zero (table surface)
     stepperZdestPosition = 0;      
-    lastz = 0;
     while (stepperZdistanceToGo() != 0) {
       stepperZrun();
     }   
+    lastz = 0;    
+
     /////////////////////////////////////////////////////////// X LEFT RIGHT
-    Serial.print("{ \"log\" : \"Attempting to zero X axis\"}");    
+
     while (digitalRead(xZeropin) != xZeroNC) {   
-      stepperXdestPosition = stepperXdestPosition - 32;
-      while (stepperXdistanceToGo() != 0) {
+      stepperXdestPosition = stepperXdestPosition - 1;
+      while (stepperXdistanceToGo() > 0) {
         stepperXrun();
       }
     }
-    
-    stepperXcurrPosition = -2000;
+    stepperXcurrPosition = 0;
+    lastx = 0;
+
     //moves to zero
     stepperXdestPosition = 0;
-    lastx = 0;
     while (stepperXdistanceToGo() != 0) {
       stepperXrun();
     }
+    lastx = 0;
     
-    Serial.print("{ \"log\" : \"X axis zero success\"}");
+
     ////////////////////////////////////////////////////////////// Y TABLE FRONT BACK
-    Serial.print("{ \"log\" : \"Attempting to zero Y axis\"}");   
+ 
     while (digitalRead(yZeropin) != yZeroNC) {   
-      stepperYdestPosition = stepperYdestPosition + 32;
+      stepperYdestPosition = stepperYdestPosition + 1;
       while (stepperYdistanceToGo() != 0) {
         stepperYrun();
       }      
     }
+    //zero switch is on high side
+    stepperYcurrPosition = tableysteps;
+    
     //moves to 0
-    stepperYcurrPosition = tableysteps+10000;
     stepperYdestPosition = 0;
     lasty = 0;
     while (stepperYdistanceToGo() != 0) {
       stepperYrun();
     }      
+    
     ////////////////////////////////////////////////////////////// E zero
-    Serial.print("{ \"log\" : \"Attempting to test E axis\"}");   
+
     stepperEdestPosition = 0;  //1 rotation
     while (stepperEdistanceToGo() != 0) {
         stepperErun();
@@ -297,83 +272,56 @@ void zeroaxis() {
     stepperEcurrPosition = 0;
     stepperEdestPosition = 0;
     laste = 0;
-    Serial.print("{ \"log\" : \"Extruder stepper axis zero success\"}");  
+    
+    //WAIT
+    line(45.0, 45.0, 5.0, 0.0);
     
 }
 // END ZEROAXIS()
 // ==============================================================================================================================================================================
 // START LINE()
 void line(double x, double y, double z, double e) {
-
-  //DISTANCESTEPS
-   double distance = sqrt( pow((float)(x - lastx),2) + pow( (float)(y - lasty),2) + pow( (float)(z - lastz), 2) + pow( (float)(e - laste), 2));
-   double steps = round(distance*500);
-   
-        //calculate new step positions from micron position
-   double nx = tablexsteps*(x/tablexdistance);
-   double ny = tableysteps*(y/tableydistance);  
-   double nz = tablezsteps*(z/tablezdistance);      
-   double ne = tableesteps*(e/tableedistance);                
-
-   double cx = float(stepperXcurrPosition);
-   double cy = float(stepperYcurrPosition);   
-   double cz = float(stepperZcurrPosition);      
-   double ce = float(stepperEcurrPosition);         
-
+   double distance = sqrt( pow((float)(x - lastx),2) + pow( (float)(y - lasty),2) + pow( (float)(z - lastz), 2) + pow( (float)(e - laste), 2) );
+   double steps = round(distance*50); // distance to move * (1mm / (circum/steps per rotation))
+   if (steps == 0) { steps = steps + 1; }
   
-   double dx = ((nx-cx)/steps);
-   double dy = ((ny-cy)/steps);   
-   double dz = ((nz-cz)/steps);      
-   double de = ((ne-ce)/steps);         
+   for (int i = 0; i <= steps; i++) {   
+     double stepratio = i/steps;        
 
+     double newx = lastx + ((x-lastx) * stepratio);
+     double newy = lasty + ((y-lasty) * stepratio);     
+     double newz = lastz + ((z-lastz) * stepratio);          
+     double newe = laste + ((e-laste) * stepratio);  
+
+     double newxsteps = tablexsteps*(newx/tablexdistance);
+     double newysteps = tableysteps*(newy/tableydistance);  
+     double newzsteps = tablezsteps*(newz/tablezdistance);      
+     double newesteps = tableesteps*(newe/tableedistance); 
+     
+     newxsteps = newxsteps/2;
+     newysteps = newysteps/2;
+     newzsteps = newzsteps/2;
+     newesteps = newesteps/2;     
+      
+     stepperXdestPosition = round(newxsteps)*2;
+     stepperYdestPosition = round(newysteps)*2;
+     stepperZdestPosition = round(newzsteps)*2;
+     stepperEdestPosition = round(newesteps)*2;   
+
+
+     
+     while ((stepperXdistanceToGo() != 0) || (stepperYdistanceToGo() != 0) || (stepperZdistanceToGo() != 0) || (stepperEdistanceToGo() != 0)) {
+         stepperXrun();
+         stepperYrun();
+         stepperZrun();
+         stepperErun();      
+       } 
+   }
    
-   //distance
-   /*
-   double deltax = lastx - x;
-   double deltay = lasty - y;
-   double deltaz = lastz - z;
-   double deltae = laste - e;   
-   Serial.print("{ \"deltax\" : \"");
-   Serial.print(deltax);
-   Serial.print("\", \"deltay\" : \"");   
-   Serial.print(deltay);   
-   Serial.print("\", \"deltaz\" : \"");   
-   Serial.print(deltaz);   
-   Serial.print("\", \"deltae\" : \"");   
-   Serial.print(deltae);      
-   Serial.println("\"}");
-   */
-   //
-  
    lastx = x;
    lasty = y;
    lastz = z;
    laste = e;
-    
-   for (int i = 0; i <= steps; i++) {   
-     double newx = cx + (dx*i);
-     double newy = cy + (dy*i);     
-     double newz = cz + (dz*i);          
-     double newe = ce + (de*i);     
-      
-     stepperXdestPosition = round(newx);
-     stepperYdestPosition = round(newy);
-     stepperZdestPosition = round(newz);
-     stepperEdestPosition = round(newe);     
-     
-     
-     while ((stepperXdistanceToGo() != 0) || (stepperYdistanceToGo() != 0) || (stepperZdistanceToGo() != 0) || (stepperEdistanceToGo() != 0)) {
-       ///GET THESE INTO THE MAIN LOOP
-       // NEED TO REFACTOR EVENT LOOP
-       
-         stepperXrun();
-         stepperYrun();
-         stepperZrun();
-         stepperErun();
-       
-       
-       } 
-   }
   
 }
 // END LINE();
@@ -426,7 +374,6 @@ void processMessage(aJsonObject *msg)
       if (jsonpz) {  
         char* tempz = jsonpz->valuestring;
         g1z = atof(tempz);   
-        zeroplane();
       }
       
       aJsonObject *jsonpe = aJson.getObjectItem(msg, "e");
@@ -443,9 +390,9 @@ void processMessage(aJsonObject *msg)
   if (cmd == "G92") {   
       aJsonObject *jsonpe = aJson.getObjectItem(msg, "e");
       if (jsonpe) {
-        stepperEcurrPosition = 0.0f;
-        stepperEdestPosition = 0.0f;
-        laste = 0.0f; 
+        stepperEcurrPosition = 0.0;
+        stepperEdestPosition = 0.0;
+        laste = 0.0; 
       } 
     }///END G92
     
@@ -459,13 +406,12 @@ void processMessage(aJsonObject *msg)
 
 ///////========================vvvvvvvv STEPPER CONTROLLERS vvvvvv==================
 
-double stepperXdistanceToGo() { return stepperXdestPosition - stepperXcurrPosition; }
+double stepperXdistanceToGo() { return abs(stepperXdestPosition - stepperXcurrPosition); }
 
 void stepperXrun() {
   double dir = 0;
-  stepperXdestPosition = round(stepperXdestPosition);
-  stepperXcurrPosition = round(stepperXcurrPosition);
-  if (stepperXdestPosition != stepperXcurrPosition) {
+  
+  if (stepperXdistanceToGo() >= 1) {
     //SET DIRECTION
     if (stepperXdestPosition > stepperXcurrPosition) {
       digitalWrite(motorpinXdir, HIGH);
@@ -474,23 +420,29 @@ void stepperXrun() {
       digitalWrite(motorpinXdir, LOW); 
       dir = -1;
     }
+
+    if (micros() < (stepperXtimer-stepperXspeed)) {
+      //rollover bug... fix
+      stepperXtimer = micros();
+    }
+    
     //PULSE AT SPEED LIMIT
-    if (micros() > (stepperXtimer+stepperXspeed)) {
+    if (micros() >= (stepperXtimer+stepperXspeed)) {
       digitalWrite(motorpinXstep, stepperXtoggle);
       stepperXtimer = micros();
       stepperXtoggle = !stepperXtoggle;
       stepperXcurrPosition += dir;
     }
+    
+
   }
 }
 
-double stepperYdistanceToGo() { return stepperYdestPosition - stepperYcurrPosition; }
+double stepperYdistanceToGo() { return abs(stepperYdestPosition - stepperYcurrPosition); }
 
 void stepperYrun() {
   double dir = 0;
-  stepperYdestPosition = round(stepperYdestPosition);
-  stepperYcurrPosition = round(stepperYcurrPosition);  
-  if (stepperYdestPosition != stepperYcurrPosition) {
+  if (stepperYdistanceToGo() >= 1) {
     //SET DIRECTION
     if (stepperYdestPosition > stepperYcurrPosition) {
       digitalWrite(motorpinYdir, HIGH);
@@ -499,23 +451,26 @@ void stepperYrun() {
       digitalWrite(motorpinYdir, LOW); 
       dir = -1;
     }
+    if (micros() < (stepperYtimer-stepperYspeed)) {
+      //rollover bug... fix
+      stepperYtimer = micros();
+    }      
     //PULSE AT SPEED LIMIT
-    if (micros() > (stepperYtimer+stepperYspeed)) {
+    if (micros() >= (stepperYtimer+stepperYspeed)) {
       digitalWrite(motorpinYstep, stepperYtoggle);
       stepperYtimer = micros();
       stepperYtoggle = !stepperYtoggle;
       stepperYcurrPosition += dir;
     }
+  
   }
 }
 
-double stepperZdistanceToGo() { return stepperZdestPosition - stepperZcurrPosition; }
+double stepperZdistanceToGo() { return abs(stepperZdestPosition - stepperZcurrPosition); }
 
 void stepperZrun() {
   double dir = 0;
-  stepperZdestPosition = round(stepperZdestPosition);
-  stepperZcurrPosition = round(stepperZcurrPosition);  
-  if (stepperZdestPosition != stepperZcurrPosition) {
+  if (stepperZdistanceToGo() >= 1) {
     //SET DIRECTION
     if (stepperZdestPosition > stepperZcurrPosition) {
       digitalWrite(motorpinZdir, HIGH);
@@ -524,8 +479,12 @@ void stepperZrun() {
       digitalWrite(motorpinZdir, LOW); 
       dir = -1;
     }
+    if (micros() < (stepperZtimer-stepperZspeed)) {
+      //rollover bug... fix
+      stepperZtimer = micros();
+    }       
     //PULSE AT SPEED LIMIT
-    if (micros() > (stepperZtimer+stepperZspeed)) {
+    if (micros() >= (stepperZtimer+stepperZspeed)) {
       digitalWrite(motorpinZstep, stepperZtoggle);
       stepperZtimer = micros();
       stepperZtoggle = !stepperZtoggle;
@@ -534,13 +493,12 @@ void stepperZrun() {
   }
 }
 
-double stepperEdistanceToGo() { return stepperEdestPosition - stepperEcurrPosition; }
+double stepperEdistanceToGo() { return abs(stepperEdestPosition - stepperEcurrPosition); }
 
 void stepperErun() {
   double dir = 0;
-  stepperEdestPosition = round(stepperEdestPosition);
-  stepperEcurrPosition = round(stepperEcurrPosition);    
-  if (stepperEdestPosition != stepperEcurrPosition) {
+  
+  if (stepperEdistanceToGo() >= 1) {
     //SET DIRECTION
     if (stepperEdestPosition > stepperEcurrPosition) {
       digitalWrite(motorpinEdir, HIGH);
@@ -549,8 +507,12 @@ void stepperErun() {
       digitalWrite(motorpinEdir, LOW); 
       dir = -1;
     }
+    if (micros() < (stepperEtimer-stepperEspeed)) {
+      //rollover bug... fix
+      stepperEtimer = micros();
+    }       
     //PULSE AT SPEED LIMIT
-    if (micros() > (stepperEtimer+stepperEspeed)) {
+    if (micros() >= (stepperEtimer+stepperEspeed)) {
       digitalWrite(motorpinEstep, stepperEtoggle);
       stepperEtimer = micros();
       stepperEtoggle = !stepperEtoggle;
