@@ -23,12 +23,15 @@ Build
 Electronics:
 
 1X Arduino DUE https://www.sparkfun.com/products/11589
+
 5X Big Easy Driver https://www.sparkfun.com/products/10735
+
 5X Stepper Motor with Cable https://www.sparkfun.com/products/9238
 
 Frame:
 
 Documentation https://github.com/josefprusa/PrusaMendel/blob/master/docs/documentation.pdf
+
 Frame Printable parts STL: https://github.com/josefprusa/PrusaMendel/tree/master/metric-prusa-lm8uu
 
 Nozzle: http://www.reprap.org/wiki/LulzBot/Budaschnozzle
