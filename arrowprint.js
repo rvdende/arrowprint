@@ -4,6 +4,9 @@
 //ARROW PRINTER
 //READS IN GCODE AND RELAYS TO DUE FOR PRINTING.
 
+var file = "printer_bracket2.gcode";
+
+///
 var NEWGODE = '{"cmd":"M107"}';
 var TEMP = 0;
 var SerialPort = require("serialport"); //so we can access the serial port
@@ -46,7 +49,7 @@ var gcodeprint = function(arduino) {
 			gcodereader.resume();	//reads another line from file
 		}
 
-		if (obj.thermistor) {
+		if (obj.thermistor>0) {
 			var temperature = (obj.thermistor/Math.pow(2,16))*1024;
 			temperature = thermistorlookupcelsius(temperature);
 			console.log("Thermistor " + temperature);
@@ -59,7 +62,7 @@ var gcodeprint = function(arduino) {
 var reader = require ("buffered-reader");
 var BinaryReader = reader.BinaryReader;
 var DataReader = reader.DataReader;
-var file = "printer_bracket.gcode";
+
 var offset;
 var linecounter = 0;
 
