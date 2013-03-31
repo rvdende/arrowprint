@@ -33,9 +33,6 @@ Frame Printable parts STL: https://github.com/josefprusa/PrusaMendel/tree/master
 
 Nozzle: http://www.reprap.org/wiki/LulzBot/Budaschnozzle
 
-
-![Arrow Print image](/arrowprint.jpg "Arrow print image")
-
 Step 1 Arduino side of things
 =============================
 
@@ -60,3 +57,5 @@ edit nodejs program to read correct gcode file. (best to use Slic3r in my experi
 ```
 node arrowprint.js
 ```
+
+![Arrow Print image](/arrowprint.jpg "Arrow print image")
