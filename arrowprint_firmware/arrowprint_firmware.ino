@@ -6,7 +6,6 @@
  * Use arduino toolkit version 1.5.2 or later
  * Make sure you use an Arduino DUE (Or Leonardo)
  * Install aJSON library
- * Install AccelStepper library
  */
 #include <aJSON.h>
 
@@ -32,7 +31,7 @@ double tableesteps  = -45000.0;
 //measured (1000 = 1mm)
 double tablexdistance = 180;    //in microns (158mm )
 double tableydistance = 200.0625;    //in microns (200mm)
-double tablezdistance = 69.2347;    //in microns (96mm)
+double tablezdistance = 70.0;    //in microns (96mm)
 double tableedistance = 1000.000;    //in microns (96mm)
 
 
@@ -46,7 +45,7 @@ double stepperXcurrPosition = 0;
 double stepperXdestPosition = 0;
 double stepperXtimer = 0;
 int    stepperXtoggle = 0;
-double stepperXspeed = 3200;
+double stepperXspeed = 2560;
 
 int motorpinYstep = 26;
 int motorpinYdir  = 27;
@@ -54,7 +53,7 @@ double stepperYcurrPosition = 0;
 double stepperYdestPosition = 0;
 double stepperYtimer = 0;
 int    stepperYtoggle = 0;
-double stepperYspeed = 3200;  //slower for more power
+double stepperYspeed = 2560;  //slower for more power
 
 int motorpinZstep = 30;
 int motorpinZdir  = 31;
@@ -62,7 +61,7 @@ double stepperZcurrPosition = 0;
 double stepperZdestPosition = 0;
 double stepperZtimer = 0;
 int    stepperZtoggle = 0;
-double stepperZspeed = 3200;
+double stepperZspeed = 2560;
 
 int motorpinEstep = 28;
 int motorpinEdir  = 29;
@@ -70,7 +69,7 @@ double stepperEcurrPosition = 0;
 double stepperEdestPosition = 0;
 double stepperEtimer = 0;
 int    stepperEtoggle = 0;
-double stepperEspeed = 6400;
+double stepperEspeed = 2560;
 
 
 // Motor Zero switch pins
@@ -208,16 +207,27 @@ void zeroaxis() {
   */
 
     ////////////////////////////////////////////////////////ZERO Z - UPDOWN
-    while (digitalRead(zZeropin) != zZeroNC) {             
-      stepperZdestPosition = stepperZdestPosition + 1;
+    
+    //slightly up while on zeroswitch.
+
+   while (digitalRead(zZeropin) == zZeroNC) {          
+    stepperZdestPosition = stepperZdestPosition + 200;
+      while (stepperZdistanceToGo() != 0) {
+        stepperZrun();
+      }
+   }
+    
+    //back down to zero
+    
+   while (digitalRead(zZeropin) != zZeroNC) {             
+      stepperZdestPosition = stepperZdestPosition - 1;
       while (stepperZdistanceToGo() != 0) {
         stepperZrun();
       }
     }
 
     //top most is equal to tablezsteps
-    stepperZcurrPosition = tablezsteps;
- 
+    stepperZcurrPosition = 0;
     //moves to zero (table surface)
     stepperZdestPosition = 0;      
     while (stepperZdistanceToGo() != 0) {
@@ -307,8 +317,6 @@ void line(double x, double y, double z, double e) {
      stepperYdestPosition = round(newysteps)*2;
      stepperZdestPosition = round(newzsteps)*2;
      stepperEdestPosition = round(newesteps)*2;   
-
-
      
      while ((stepperXdistanceToGo() != 0) || (stepperYdistanceToGo() != 0) || (stepperZdistanceToGo() != 0) || (stepperEdistanceToGo() != 0)) {
          stepperXrun();
