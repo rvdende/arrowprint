@@ -3,9 +3,14 @@
 // v 5.0
 //ARROW PRINTER
 //READS IN GCODE AND RELAYS TO DUE FOR PRINTING.
+console.log("###########################################")
 
-var file = "printer_bracket2.gcode";
+//var file = "ybrac-t.gcode";
+//var file = "y-bushing.gcode";
+var file = "x-carriage.gcode";
 
+console.log("PRINTING: "+file)
+console.log("###########################################")
 ///
 var NEWGODE = '{"cmd":"M107"}';
 var TEMP = 0;
