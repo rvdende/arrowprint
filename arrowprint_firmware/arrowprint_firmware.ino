@@ -9,9 +9,9 @@
  */
 #include <aJSON.h>
 
-String version = "5.2";
+String version = "5.3";
 
-
+int substeps = 16;
 
 /* 
  *  =======================================================================================
@@ -23,10 +23,10 @@ int cmd = 0;
 int hotheadtarget = 10;    //160 DEFAULT
 
 //physical movement scale (bigger == more);
-double tablexsteps    = 1920.0;     
-double tableysteps    = 2134.0;
-double tablezsteps    = 22400.0;    //234000 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
-double tableesteps  = -45000.0;
+double tablexsteps    = 1920.0 * substeps;     
+double tableysteps    = 2134.0 * substeps;
+double tablezsteps    = 22400.0 * substeps;    //234000 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
+double tableesteps  = 72000.000 * substeps;  //-45000 safe //66666.666
 
 //measured (1000 = 1mm)
 double tablexdistance = 180;    //in microns (158mm )
@@ -45,7 +45,7 @@ double stepperXcurrPosition = 0;
 double stepperXdestPosition = 0;
 double stepperXtimer = 0;
 int    stepperXtoggle = 0;
-double stepperXspeed = 2560;
+double stepperXspeed = 2600 / substeps;
 
 int motorpinYstep = 26;
 int motorpinYdir  = 27;
@@ -53,7 +53,7 @@ double stepperYcurrPosition = 0;
 double stepperYdestPosition = 0;
 double stepperYtimer = 0;
 int    stepperYtoggle = 0;
-double stepperYspeed = 2560;  //slower for more power
+double stepperYspeed = 2600 / substeps;  //slower for more power
 
 int motorpinZstep = 30;
 int motorpinZdir  = 31;
@@ -61,7 +61,7 @@ double stepperZcurrPosition = 0;
 double stepperZdestPosition = 0;
 double stepperZtimer = 0;
 int    stepperZtoggle = 0;
-double stepperZspeed = 2560;
+double stepperZspeed = 2600 / substeps;
 
 int motorpinEstep = 28;
 int motorpinEdir  = 29;
@@ -69,17 +69,21 @@ double stepperEcurrPosition = 0;
 double stepperEdestPosition = 0;
 double stepperEtimer = 0;
 int    stepperEtoggle = 0;
-double stepperEspeed = 2560;
+double stepperEspeed = 4800 / substeps;
 
 
 // Motor Zero switch pins
-int xZeropin = 50;        //INPUT pin
-int yZeropin = 51;        //INPUT pin
-int zZeropin = 52;        //INPUT pin
+int xZeropin = 34;        //INPUT pin
+int yZeropin = 33;        //INPUT pin
+int zZeropin = 32;        //INPUT pin
 
 //thermo control
 int thermoswitch = 2;    //output switch for turning on melter
 int thermo = A0;         //input for reading temperature of melter
+
+//thermo LED
+int thermoheat = 36;     // on when we are heating up
+int thermordy = 37;      // on when we are hot enough to print
 
 //NC/NO toggles
 int xZeroNC  =  1;       //Normally closed/open
@@ -124,6 +128,9 @@ void setup() {
   pinMode(motorpinZdir, OUTPUT);    
   pinMode(motorpinEstep, OUTPUT);
   pinMode(motorpinEdir, OUTPUT);    
+
+  pinMode(thermoheat, OUTPUT);
+  pinMode(thermordy, OUTPUT);
 
   thermistor();
   zeroaxis();                                
@@ -189,10 +196,31 @@ void loop() {
 }
 //=======================================================================================
 
+double hotendtemp = 0;
+double hotendlasttemp = 0;
 void thermistor() {
+    double readtry = analogRead(thermo);
+    if (readtry > 0) {
+      hotendtemp = readtry;
+    }
+   
    Serial.print("{ \"thermistor\" : \"");
-   Serial.print(analogRead(thermo));
+   Serial.print(hotendtemp);
    Serial.print("\"}");   
+   
+   if (hotendtemp > 3750) {
+     digitalWrite(thermordy, HIGH);
+   } else {
+     digitalWrite(thermordy, LOW);
+   }
+   
+   if (hotendlasttemp > hotendtemp) {
+     digitalWrite(thermoheat, HIGH);
+   } else {
+     digitalWrite(thermoheat, LOW);
+   }
+   
+   hotendlasttemp = hotendtemp;    
 }
 
 //=======================================================================================
@@ -211,7 +239,7 @@ void zeroaxis() {
     //slightly up while on zeroswitch.
 
    while (digitalRead(zZeropin) == zZeroNC) {          
-    stepperZdestPosition = stepperZdestPosition + 200;
+    stepperZdestPosition = stepperZdestPosition + (20000 * substeps);
       while (stepperZdistanceToGo() != 0) {
         stepperZrun();
       }
@@ -220,7 +248,7 @@ void zeroaxis() {
     //back down to zero
     
    while (digitalRead(zZeropin) != zZeroNC) {             
-      stepperZdestPosition = stepperZdestPosition - 1;
+      stepperZdestPosition = stepperZdestPosition - 32;
       while (stepperZdistanceToGo() != 0) {
         stepperZrun();
       }
@@ -238,7 +266,7 @@ void zeroaxis() {
     /////////////////////////////////////////////////////////// X LEFT RIGHT
 
     while (digitalRead(xZeropin) != xZeroNC) {   
-      stepperXdestPosition = stepperXdestPosition - 1;
+      stepperXdestPosition = stepperXdestPosition - substeps;
       while (stepperXdistanceToGo() > 0) {
         stepperXrun();
       }
@@ -257,7 +285,7 @@ void zeroaxis() {
     ////////////////////////////////////////////////////////////// Y TABLE FRONT BACK
  
     while (digitalRead(yZeropin) != yZeroNC) {   
-      stepperYdestPosition = stepperYdestPosition + 1;
+      stepperYdestPosition = stepperYdestPosition + substeps;
       while (stepperYdistanceToGo() != 0) {
         stepperYrun();
       }      
@@ -293,11 +321,10 @@ void zeroaxis() {
 void line(double x, double y, double z, double e) {
    double distance = sqrt( pow((float)(x - lastx),2) + pow( (float)(y - lasty),2) + pow( (float)(z - lastz), 2) + pow( (float)(e - laste), 2) );
    double steps = round(distance*50); // distance to move * (1mm / (circum/steps per rotation))
-   if (steps == 0) { steps = steps + 1; }
+   if (steps < 1) { steps = 1; }
   
-   for (int i = 0; i <= steps; i++) {   
-     double stepratio = i/steps;        
-
+   for (int i = 0; i <= steps; i = i + 1) {   
+     double stepratio = i/steps;
      double newx = lastx + ((x-lastx) * stepratio);
      double newy = lasty + ((y-lasty) * stepratio);     
      double newz = lastz + ((z-lastz) * stepratio);          
