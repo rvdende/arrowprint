@@ -1,18 +1,18 @@
 // Arrow command line relay
 // this program scans for connected devices and relays communication to a socket server
-// v 5.0
+// v 5.3
 //ARROW PRINTER
 //READS IN GCODE AND RELAYS TO DUE FOR PRINTING.
 console.log("###########################################")
 
-//var file = "ybrac-t.gcode";
-//var file = "y-bushing.gcode";
-var file = "x-carriage.gcode";
+//set your gcode file generated from slic3r
+var file = "wade-big.gcode";
 
 console.log("PRINTING: "+file)
 console.log("###########################################")
 ///
 var NEWGODE = '{"cmd":"M107"}';
+
 var TEMP = 0;
 var SerialPort = require("serialport"); //so we can access the serial port
 var os = require("os");
@@ -54,10 +54,11 @@ var gcodeprint = function(arduino) {
 			gcodereader.resume();	//reads another line from file
 		}
 
-		if (obj.thermistor>0) {
-			var temperature = (obj.thermistor/Math.pow(2,16))*1024;
-			temperature = thermistorlookupcelsius(temperature);
-			console.log("Thermistor " + temperature);
+		if (obj.thermistor) {
+			//var temperature = (obj.thermistor/Math.pow(2,16))*1024;
+			//temperature = thermistorlookupcelsius(temperature);
+			console.log("Thermistor " + obj.thermistor);
+
 		}
 
 	});
@@ -98,7 +99,9 @@ var readerstream = new DataReader (file, { encoding: "utf8" })
 			        args[key] = value.toFixed(5);				        
 			      });
 
-			      //calculate speed
+			      //calculate movement speed from direction/momentum etc.
+
+			      //calculate communication speed
 			      var speed = Math.round(1 / (os.uptime() - TIMElast));
 			      TIMElast = os.uptime();
 			      //
