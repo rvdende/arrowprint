@@ -16,10 +16,10 @@ So first things first. We need movement.
 
 You'll need:
 
-* arduino (any will do for now)
-*	stepper motor(s)
-*	power source for motor(s), in our case we use a 48V 10A powersupply. You can also use a PSU (pc power supply with 12V)
-*	stepper controller which takes in signals from the arduino and pushes power to your motor.
+* arduino (any will do for now, the [UNO](http://robotics.org.za/index.php?route=product/product&path=47&product_id=68) is nice to begin with since it is robust, but later on you might want the [DUE](http://robotics.org.za/index.php?route=product/product&path=47&product_id=604)
+*	stepper motor(s) - NEMA17 or niice [NEMA23](http://robotics.org.za/index.php?route=product/product&path=241&product_id=238)
+*	power source for motor(s), in our case we use a [48V 10A powersupply](http://robotics.org.za/index.php?route=product/product&path=55_205&product_id=766). You can also use a PSU (pc power supply with 12V)
+*	stepper controller which takes in signals from the arduino and pushes power to your motor. You could go small [1Amp](http://robotics.org.za/index.php?route=product/product&keyword=controller&category_id=0&product_id=712) or medium [2Amp](http://robotics.org.za/index.php?route=product/product&keyword=controller&category_id=0&product_id=641) or best [industrial](http://robotics.org.za/index.php?route=product/product&keyword=controller&product_id=432) 
 
 So in general you have two signals you need to understand to move your motor accurately
 
@@ -35,14 +35,12 @@ Okay, so by now you should have your motors working nicely, but you might sit wi
 With the help of JSON we can combine many commands at the same time, send it over the text based serial connection and split them out again at the other end. So far the best baud rate I found is 115200bps. For this I used nodejs, but I guess you could also use processing, C or anything that supports serial communication. It looks something like this:
 
 {cmd: "G1", x: 12.345, y: -45.678, z: 1.246}
+
 {cmd: "G1", x: 14.650, y: -41.123, z: 2.000}
 
+{cmd: "G..... }
+
 The cmd G1 thing is just something of a relic from g-code. A standard people use with CNC machines. They have different codes for different functionality, where G1 just means move here in a straight line. So in this example it will tell the machine to move to the first set of coordinates, and once it is done it will execute the second line, which is also a straight line to the second set of coordinates.
-
-like so:
-
-move (G1)   here (xyz)
-move (G1)   here (xyz)
 
 Drawing a line
 ==============
