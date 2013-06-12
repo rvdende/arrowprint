@@ -1,5 +1,5 @@
 ![Imgur](http://i.imgur.com/aii8c4w.jpg)
-![Imgur](http://i.imgur.com/O18fwEC)
+![Imgur](http://i.imgur.com/O18fwEC.jpg)
 arrowprint
 ==========
 
@@ -12,6 +12,8 @@ It really depends on what tools and skills you have at your disposal. This might
 We need to build a machine that can move, and move how we want it to move. So the basis is something like a cnc, plotter/printer robot. So you'll learn how to not only build a 3D printer, but just about any kind of robot. Which is no doubt a useful thing to know.
 
 In the case of a 3D printer. It needs to squeeze a strand of plastic down into a hotend or nozzle. It is a little melting pot with a 0.35 to 0.5mm diameter hole at the bottom. It puts the molten plastic where we want it to go. 
+
+![Imgur](http://i.imgur.com/aii8c4w.jpg)![Imgur](http://i.imgur.com/O18fwEC.jpg)
 
 So first things first. We need movement.
 ========================================
