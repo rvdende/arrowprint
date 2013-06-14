@@ -18,8 +18,6 @@ We need to build a machine that can move, and move how we want it to move. So th
 
 In the case of a 3D printer. It needs to squeeze a strand of plastic down into a hotend or nozzle. It is a little melting pot with a 0.35 to 0.5mm diameter hole at the bottom. It puts the molten plastic where we want it to go. 
 
-![Imgur](http://i.imgur.com/aii8c4w.jpg)![Imgur](http://i.imgur.com/O18fwEC.jpg)
-
 So first things first. We need movement.
 ========================================
 
