@@ -1,7 +1,7 @@
-[Imgur](http://i.imgur.com/rQf4Q2T.jpg)
-[Imgur](http://i.imgur.com/30PxcT5.jpg)
-[Imgur](http://i.imgur.com/aii8c4w.jpg)
-[Imgur](http://i.imgur.com/O18fwEC.jpg)
+![Imgur](http://i.imgur.com/rQf4Q2T.jpg)
+![Imgur](http://i.imgur.com/30PxcT5.jpg)
+![Imgur](http://i.imgur.com/aii8c4w.jpg)
+![Imgur](http://i.imgur.com/O18fwEC.jpg)
 
 VIDEOS: [video1](http://vimeo.com/60076876) [video2](http://vimeo.com/61339150)
 
