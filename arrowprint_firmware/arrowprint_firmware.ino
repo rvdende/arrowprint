@@ -5,7 +5,10 @@
  * 
  * Use arduino toolkit version 1.5.2 or later
  * Make sure you use an Arduino DUE (Or Leonardo)
- * Install aJSON library
+ *
+ * Install aJSON library from https://github.com/interactive-matter/aJson
+ * to sketchbook/libraries/aJson
+ *
  */
 #include <aJSON.h>
 
