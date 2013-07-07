@@ -21,21 +21,20 @@ int substeps = 16;
  *    CONFIGURATION
  *  =======================================================================================
  */
-int cmd = 0;
-//int hotheadtarget = 160;    //160 DEFAULT
-int hotheadtarget = 10;    //160 DEFAULT
+int cmd = 0;   
+int hotheadtarget = 10;    
 
-//physical movement scale (bigger == more);
+//how many stepper pulses (finer stepper motors would be more steps for same distance)
 double tablexsteps    = 1920.0 * substeps;     
 double tableysteps    = 2134.0 * substeps;
-double tablezsteps    = 22400.0 * substeps;    //234000 (100mm) from top (STEPS FROM TABLE SURFACE TO TOP) 0,0,0 is FAR LEFT BOTTOM
-double tableesteps  = 72000.000 * substeps;  //-45000 safe //66666.666
+double tablezsteps    = 22400.0 * substeps;    
+double tableesteps  = 72000.000 * substeps;  
 
-//measured (1000 = 1mm)
-double tablexdistance = 180;    //in microns (158mm )
-double tableydistance = 200.0625;    //in microns (200mm)
-double tablezdistance = 70.0;    //in microns (96mm)
-double tableedistance = 1000.000;    //in microns (96mm)
+//measured table movements(1000 = 1mm)
+double tablexdistance = 180;        
+double tableydistance = 200.0625;   
+double tablezdistance = 70.0;       
+double tableedistance = 1000.000;   //extruder scale, best to keep at 1000 and tweak tableesteps
 
 
 // Motor pins
