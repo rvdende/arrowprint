@@ -1,3 +1,25 @@
+Usage
+==========
+
+Upload arrowprint_firmware to your arduino due.
+
+```
+// Clone down the code using git  
+git clone https://github.com/fluentart/arrowprint.git
+
+// Install the modules we need  
+npm install serialport
+npm install buffered-reader
+npm install json-scrape
+
+// Upload arrowprint_firmware to your arduino due.  
+// Generate your .gcode file with slic3r  
+// Print your object  
+node arrowprint.js wade-big.gcode
+```
+
+
+
 ![Imgur](http://i.imgur.com/rQf4Q2T.jpg)
 ![Imgur](http://i.imgur.com/30PxcT5.jpg)
 ![Imgur](http://i.imgur.com/aii8c4w.jpg)
@@ -5,8 +27,7 @@
 
 VIDEOS: [video1](http://vimeo.com/60076876) [video2](http://vimeo.com/61339150)
 
-arrowprint
-==========
+
 
 Node.js &amp; Arduino DUE powered 3D printer. 
 
@@ -130,5 +151,3 @@ edit nodejs program to read correct gcode file. (best to use Slic3r in my experi
 ```
 node arrowprint.js
 ```
-
-![Arrow Print image](/arrowprint.jpg "Arrow print image")

@@ -1,0 +1,12 @@
+{
+  "name": "arrowprint",
+  "description": "sends gcode to arduino for controlling diy cnc or 3dprinters",
+  "version": "5.4.0",
+  "private": true,
+  "author": {
+    "name": "Rouan van der Ende",
+    "email": "rouan@8bo.org"
+  },
+  "contributors": [],
+  "dependencies": { }
+}

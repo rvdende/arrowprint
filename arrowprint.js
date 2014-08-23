@@ -12,7 +12,6 @@ if (!process.argv[2]) {
 	file = process.argv[2];
 }
 
-//var file = "robot_leg_prep.gcode";	//set your gcode file generated from slic3r
 
 var gcodecached = [];
 
